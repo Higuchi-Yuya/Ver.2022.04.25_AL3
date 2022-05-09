@@ -64,6 +64,7 @@ class GameScene {
 
 	float grit_x = -20;
 	float grit_z = -20;
+	float Sx, Sy, Sz;
 	//Vector3* Line = nullptr;
 
 	//テクスチャハンドル

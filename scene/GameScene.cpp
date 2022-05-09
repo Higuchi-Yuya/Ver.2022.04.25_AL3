@@ -129,6 +129,14 @@ void GameScene::Initialize() {
 		grit_z += 5;
 	}
 
+	//X,Y,Z方向のスケーリングを設定
+	worldTransform_.scale_ = {Sx = 1, Sy = 1, Sz = 5};
+	//スケーリング行列を宣言
+	Matrix4 matScale;
+	matScale.m[0][0] = Sx;
+	matScale.m[1][1] = Sy;
+	matScale.m[2][2] = Sz;
+	worldTransform_.matWorld_ = {1.0f, 1.0f, 1.0f};
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 	
