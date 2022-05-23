@@ -73,12 +73,13 @@ void GameScene::rotate(Vector3& vertex, Vector3& reference_point, float frequenc
 }
 
 
-
 void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 
 	debugCamera_ = new DebugCamera(1200, 720);
+
+	Affine_trans trans;
 
 	//３Dモデルの生成
 	model_ = Model::Create();
@@ -130,13 +131,51 @@ void GameScene::Initialize() {
 	}
 
 	//X,Y,Z方向のスケーリングを設定
-	worldTransform_.scale_ = {Sx = 1, Sy = 1, Sz = 5};
+	worldTransform_.scale_ = {Sx = 5, Sy = 1, Sz = 5};
+
 	//スケーリング行列を宣言
 	Matrix4 matScale;
-	matScale.m[0][0] = Sx;
-	matScale.m[1][1] = Sy;
-	matScale.m[2][2] = Sz;
-	worldTransform_.matWorld_ = {1.0f, 1.0f, 1.0f};
+
+	trans.scale(matScale, Sx, Sy, Sz);
+
+
+	// X,Y,Z方向の回転を設定
+	worldTransform_.rotation_ = {Rx = 45.0f, Ry = 45.0f, Rz = 45.0f};
+
+	// 合成用回転行列を宣言
+	Matrix4 matRot;
+	Matrix4 matRotX, matRotY, matRotZ;
+	
+	// 各自軸用回転行列を宣言
+	trans.rotateX(matRotX, Rx);
+	trans.rotateY(matRotY, Ry);
+	trans.rotateZ(matRotZ, Rz);
+	
+	//回転行列の単位行列
+	trans.identity_matrix(matRot);
+
+	// 各軸の回転行列を合成
+	matRot = matRotX * matRotY * matRotZ;
+
+	// X,Y,Z軸周りの平行移動を設定
+	worldTransform_.translation_ = {Tx = 10, Ty = 0, Tz = 0};
+
+	// 平行移動行列を宣言
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+
+	trans.translation(matTrans, Tx, Ty, Tz);
+
+	//単位行列を入れる
+	trans.identity_matrix(worldTransform_.matWorld_);
+	
+	worldTransform_.matWorld_ *= matScale;
+	worldTransform_.matWorld_ *= matRot;
+	worldTransform_.matWorld_ *= matTrans;
+	
+	//行列の転送
+	worldTransform_.TransferMatrix();
+
+
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 	
@@ -179,12 +218,12 @@ void GameScene::Draw() {
 	//ライン描画が参照するビュープロジェクションを指定する
 	
 	//ボックスの描画
-	for (int i=0;i<12;i++) {
+	/*for (int i=0;i<12;i++) {
 		PrimitiveDrawer::GetInstance()->DrawLine3d( box_vecter[vertex[i][0]], box_vecter[vertex[i][1]], box_vecter_);
 		PrimitiveDrawer::GetInstance()->DrawLine3d( box_vecter2[vertex[i][0]], box_vecter2[vertex[i][1]], box_vecter2_);
 		PrimitiveDrawer::GetInstance()->DrawLine3d( box_vecter3[vertex[i][0]], box_vecter3[vertex[i][1]], box_vecter3_);
 		PrimitiveDrawer::GetInstance()->DrawLine3d( box_vecter4[vertex[i][0]], box_vecter4[vertex[i][1]], box_vecter4_);
-	}
+	}*/
 
 	//グリット線の描画
 	for (int i = 0; i < 9; i++) {

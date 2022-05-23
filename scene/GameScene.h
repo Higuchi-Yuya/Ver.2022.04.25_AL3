@@ -14,6 +14,8 @@
 #include "AxisIndicator.h"
 #include <math.h>
 
+#include "Affine_trans.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -65,6 +67,8 @@ class GameScene {
 	float grit_x = -20;
 	float grit_z = -20;
 	float Sx, Sy, Sz;
+	float Rx, Ry, Rz;
+	float Tx, Ty, Tz;
 	//Vector3* Line = nullptr;
 
 	//テクスチャハンドル
