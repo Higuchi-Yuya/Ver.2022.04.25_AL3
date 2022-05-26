@@ -70,11 +70,13 @@ void Affine_trans::rotate(Matrix4& vertex, float frequency_x, float frequency_y,
 {
 	Matrix4 RotX, RotY, RotZ;
 
+	rotateX(RotX, frequency_x);
+	rotateY(RotY, frequency_y);
+	rotateZ(RotZ, frequency_z);
 
+	identity_matrix(vertex);
 
-	
-
-	//vertex = RotZ * RotX * RotY;
+	vertex = RotZ * RotX * RotY;
 
 }
 

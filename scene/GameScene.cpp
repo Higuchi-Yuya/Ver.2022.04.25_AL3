@@ -93,14 +93,11 @@ void GameScene::Initialize() {
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
-
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
 	
-
-
 	for (int i = 0; i < 8; i++) {
 		scale(box_vecter[i], box_vecter[0], 2, 3, 4);
 		translation(box_vecter3[i], 10, 10, 10);
@@ -108,8 +105,9 @@ void GameScene::Initialize() {
 	
 	}
 
+#pragma region グリット線の描画の設定
 	//グリット線の描画位置設定
-	
+
 	for (int i = 0; i < 9; i++) {
 		translation(grit_line_x_s[i], grit_x, 0, -20);
 		grit_x += 5;
@@ -129,15 +127,21 @@ void GameScene::Initialize() {
 		translation(grit_line_z_e[i], 20, 0, grit_z);
 		grit_z += 5;
 	}
+#pragma endregion
 
-	//X,Y,Z方向のスケーリングを設定
+
+#pragma region スケーリング行列の設定
+	// X,Y,Z方向のスケーリングを設定
 	worldTransform_.scale_ = {Sx = 5, Sy = 1, Sz = 5};
 
 	//スケーリング行列を宣言
 	Matrix4 matScale;
 
 	trans.scale(matScale, Sx, Sy, Sz);
+#pragma endregion
 
+
+#pragma region 回転行列の設定
 
 	// X,Y,Z方向の回転を設定
 	worldTransform_.rotation_ = {Rx = 45.0f, Ry = 45.0f, Rz = 45.0f};
@@ -145,25 +149,25 @@ void GameScene::Initialize() {
 	// 合成用回転行列を宣言
 	Matrix4 matRot;
 	Matrix4 matRotX, matRotY, matRotZ;
-	
-	// 各自軸用回転行列を宣言
-	trans.rotateX(matRotX, Rx);
-	trans.rotateY(matRotY, Ry);
-	trans.rotateZ(matRotZ, Rz);
-	
-	//回転行列の単位行列
-	trans.identity_matrix(matRot);
 
 	// 各軸の回転行列を合成
-	matRot = matRotX * matRotY * matRotZ;
+	trans.rotate(matRot, Rx, Ry, Rz);
 
-	// X,Y,Z軸周りの平行移動を設定
+#pragma endregion
+
+	
+#pragma region 平行移動を設定
+
 	worldTransform_.translation_ = {Tx = 10, Ty = 0, Tz = 0};
 
 	// 平行移動行列を宣言
 	Matrix4 matTrans = MathUtility::Matrix4Identity();
 
 	trans.translation(matTrans, Tx, Ty, Tz);
+
+#pragma endregion
+
+	
 
 	//単位行列を入れる
 	trans.identity_matrix(worldTransform_.matWorld_);
