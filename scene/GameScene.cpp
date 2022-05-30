@@ -2,6 +2,9 @@
 #include "TextureManager.h"
 #include <cassert>
 
+
+
+
 const double Pi = 3.141593;
 
 GameScene::GameScene() {}
@@ -83,15 +86,40 @@ void GameScene::Initialize() {
 
 	//３Dモデルの生成
 	model_ = Model::Create();
+
 	//ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
+	for (WorldTransform& worldTransform_ : worldTransform_) {
+		worldTransform_.Initialize();
+	}
+
+
+	//カメラ視点座標を設定
+	viewProjection_.eye = {Eye_x, Eye_y, Eye_z};
+
+	//カメラ注視点座標を設定
+	viewProjection_.target = {Target_x, Target_y, Target_z};
+	
+	//カメラ上方向ベクトルを設定 (右上45度指定)
+	viewProjection_.up = {cosf(Pi / 4.0f), sinf(Pi / 4.0f), 0.0f};
+
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+
+	//乱数シード生成器
+	std::random_device seed_gen;
+	//メルセンヌ・ツイスターの乱数エンジン
+	std::mt19937_64 engine(seed_gen());
+	//乱数範囲の指定
+	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
+	
+	std::uniform_real_distribution<float> rotDist(0.0f, 360.0f);
+	
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -132,7 +160,10 @@ void GameScene::Initialize() {
 
 #pragma region スケーリング行列の設定
 	// X,Y,Z方向のスケーリングを設定
-	worldTransform_.scale_ = {Sx = 5, Sy = 1, Sz = 5};
+
+	for (WorldTransform& worldTransform_ : worldTransform_) {
+		worldTransform_.scale_ = {Sx = 1, Sy = 1, Sz = 1};
+	}
 
 	//スケーリング行列を宣言
 	Matrix4 matScale;
@@ -142,42 +173,73 @@ void GameScene::Initialize() {
 
 
 #pragma region 回転行列の設定
-
+	for (float& Rx : Rx) {
+		Rx = rotDist(engine);
+	}
+	for (float& Ry : Ry) {
+		Ry = rotDist(engine);
+	}
+	for (float& Rz : Rz) {
+		Rz = rotDist(engine);
+	}
 	// X,Y,Z方向の回転を設定
-	worldTransform_.rotation_ = {Rx = 45.0f, Ry = 45.0f, Rz = 45.0f};
+	for (int i = 0; i < _countof(worldTransform_); i++) {
+		
+		worldTransform_[i].rotation_ = {Rx[i], Ry[i], Rz[i]};
+	}
+	
 
 	// 合成用回転行列を宣言
-	Matrix4 matRot;
-	Matrix4 matRotX, matRotY, matRotZ;
-
-	// 各軸の回転行列を合成
-	trans.rotate(matRot, Rx, Ry, Rz);
+	Matrix4 matRot[100];
+	
+	for (int i = 0; i < _countof(worldTransform_); i++) {
+		// 各軸の回転行列を合成
+		trans.rotate(matRot[i], Rx[i], Ry[i], Rz[i]);
+	}
+	
 
 #pragma endregion
 
 	
 #pragma region 平行移動を設定
-
-	worldTransform_.translation_ = {Tx = 10, Ty = 0, Tz = 0};
+	for (float& Tx : Tx) {
+		Tx = posDist(engine);
+	}
+	for (float& Ty : Ty) {
+		Ty = posDist(engine);
+	}
+	for (float& Tz : Tz) {
+		Tz = posDist(engine);
+	}
+	for (int i = 0; i < _countof(worldTransform_); i++) {
+		worldTransform_[i].translation_ = {Tx[i], Ty[i], Tz[i]};
+	}
 
 	// 平行移動行列を宣言
-	Matrix4 matTrans = MathUtility::Matrix4Identity();
-
-	trans.translation(matTrans, Tx, Ty, Tz);
+	Matrix4 matTrans[100];
+	for (int i = 0; i < _countof(worldTransform_); i++) {
+		matTrans[i] = MathUtility::Matrix4Identity();
+		trans.translation(matTrans[i], Tx[i], Ty[i], Tz[i]);
+	}
+	
 
 #pragma endregion
 
 	
 
 	//単位行列を入れる
-	trans.identity_matrix(worldTransform_.matWorld_);
+	for (int i = 0; i < _countof(worldTransform_);i++) {
+
+		trans.identity_matrix(worldTransform_[i].matWorld_);
+
+		worldTransform_[i].matWorld_ *= matScale;
+		worldTransform_[i].matWorld_ *= matRot[i];
+		worldTransform_[i].matWorld_ *= matTrans[i];
+
+		//行列の転送
+		worldTransform_[i].TransferMatrix();
+	}
 	
-	worldTransform_.matWorld_ *= matScale;
-	worldTransform_.matWorld_ *= matRot;
-	worldTransform_.matWorld_ *= matTrans;
-	
-	//行列の転送
-	worldTransform_.TransferMatrix();
 
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
@@ -186,6 +248,89 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
+	#pragma region 視点の移動ベクトル
+	//視点移動ベクトル
+	Vector3 move(0, 0, 0);
+
+	//視点の移動速さ
+	const float kEyeSpeed = 0.2f;
+
+	//注視点の移動速さ
+	const float kTargetSpeed = 0.2f;
+
+	//押した方向で移動ベクトルを変更
+
+	//前後
+	if (input_->PushKey(DIK_W)) {
+		move.z += kEyeSpeed;
+	} else if (input_->PushKey(DIK_S)) {
+		move.z -= kEyeSpeed;
+	}
+
+	//左右
+	if (input_->PushKey(DIK_LEFT)) {
+		move.x += kTargetSpeed;
+	} else if (input_->PushKey(DIK_RIGHT)) {
+		move.x -= kTargetSpeed;
+	}
+	
+
+	//視点移動(ベクトルの加算)
+	viewProjection_.eye += move;
+
+	//注視点移動(ベクトル加算)
+	viewProjection_.target += move;
+
+	//行列の再計算
+	viewProjection_.UpdateMatrix();
+
+	//デバッグ用表示
+
+	//視点
+	debugText_->SetPos(50, 50);
+	debugText_->Printf("eye:(%f,%f,%f)", 
+						viewProjection_.eye.x, 
+						viewProjection_.eye.y, 
+						viewProjection_.eye.z);
+
+	//注視点
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("target:(%f,%f,%f)", 
+						viewProjection_.target.x, 
+						viewProjection_.target.y,
+						viewProjection_.target.z);
+
+#pragma endregion
+
+
+#pragma region 上方向回転処理
+    //上方向の回転速さ[ラジアン/frame]
+	const float kUpRotSpeed = 0.05f;
+
+	//押した方向で移動ベクトルを変更
+	if (input_->PushKey(DIK_SPACE)) {
+		viewAngle += kUpRotSpeed;
+		//２πを超えたら０に戻す
+		viewAngle = fmodf(viewAngle, Pi * 2.0f);
+	}
+
+	//上方向ベクトルを計算(半径１の円周上の座標)
+	viewProjection_.up = {cosf(viewAngle), sinf(viewAngle), 0.0f};
+
+	//行列の再計算
+	viewProjection_.UpdateMatrix();
+
+	//デバッグ用表示
+
+	//回転
+	debugText_->SetPos(50, 90);
+	debugText_->Printf("up:(%f,%f,%f)", 
+						viewProjection_.up.x,
+						viewProjection_.up.y, 
+						viewProjection_.up.z);
+
+#pragma endregion
+
 	debugCamera_->Update();
 	
 }
@@ -216,9 +361,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
-	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
-
+	for (WorldTransform& worldTransform_ : worldTransform_) {
+		model_->Draw(worldTransform_,viewProjection_, textureHandle_);
+	}
 	//ライン描画が参照するビュープロジェクションを指定する
 	
 	//ボックスの描画

@@ -13,8 +13,10 @@
 #include "PrimitiveDrawer.h"
 #include "AxisIndicator.h"
 #include <math.h>
+#include <random>
 
 #include "Affine_trans.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -67,8 +69,13 @@ class GameScene {
 	float grit_x = -20;
 	float grit_z = -20;
 	float Sx, Sy, Sz;
-	float Rx, Ry, Rz;
-	float Tx, Ty, Tz;
+	float Rx[100], Ry[100], Rz[100];
+	float Tx[100], Ty[100], Tz[100];
+
+	float Eye_x, Eye_y, Eye_z = -40;
+	float Target_x = 0, Target_y, Target_z;
+	float viewAngle = 0.0f;
+
 	//Vector3* Line = nullptr;
 
 	//テクスチャハンドル
@@ -138,7 +145,7 @@ class GameScene {
 	Vector4 box_vecter4_ = {1, 0, 1, 1};
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransform_;
+	WorldTransform worldTransform_[100];
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
