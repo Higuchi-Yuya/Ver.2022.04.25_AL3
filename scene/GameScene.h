@@ -72,7 +72,7 @@ class GameScene {
 	float Rx[100], Ry[100], Rz[100];
 	float Tx[100], Ty[100], Tz[100];
 
-	float Eye_x, Eye_y, Eye_z = -40;
+	float Eye_x, Eye_y, Eye_z = -50;
 	float Target_x = 0, Target_y, Target_z;
 	float viewAngle = 0.0f;
 
