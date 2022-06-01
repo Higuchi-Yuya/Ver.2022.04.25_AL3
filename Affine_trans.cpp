@@ -12,16 +12,20 @@ double Affine_trans::Rad(double degree)
 
 void Affine_trans::identity_matrix(Matrix4& vertex) 
 {
-	vertex.m[0][0] = 1;
-	vertex.m[1][1] = 1;
-	vertex.m[2][2] = 1;
-	vertex.m[3][3] = 1;
+	Matrix4 v;
+	v.m[0][0] = 1;
+	v.m[1][1] = 1;
+	v.m[2][2] = 1;
+	v.m[3][3] = 1;
+	vertex = v;
+	
 }
 
 
 
 void Affine_trans::scale(Matrix4& vertex, float expansion_rate_x, float expansion_rate_y, float expansion_rate_z) 
 {
+	identity_matrix(vertex);
 	vertex.m[0][0] = expansion_rate_x;
 	vertex.m[1][1] = expansion_rate_y;
 	vertex.m[2][2] = expansion_rate_z;
@@ -77,6 +81,60 @@ void Affine_trans::rotate(Matrix4& vertex, float frequency_x, float frequency_y,
 	identity_matrix(vertex);
 
 	vertex = RotZ * RotX * RotY;
+
+}
+
+void Affine_trans::scale(Matrix4& vertex, Vector3& scale) 
+{
+	identity_matrix(vertex);
+	vertex.m[0][0] = scale.x;
+	vertex.m[1][1] = scale.y;
+	vertex.m[2][2] = scale.z;
+	vertex.m[3][3] = 1;
+}
+
+void Affine_trans::translation(Matrix4& vertex, Vector3& translation) 
+{
+	identity_matrix(vertex);
+	vertex.m[3][0] = translation.x;
+	vertex.m[3][1] = translation.y;
+	vertex.m[3][2] = translation.z;
+}
+
+void Affine_trans::rotate(Matrix4& vertex, Vector3& rotate) 
+{
+	Matrix4 RotX, RotY, RotZ;
+
+	rotateX(RotX, rotate.x);
+	rotateY(RotY, rotate.y);
+	rotateZ(RotZ, rotate.z);
+
+	identity_matrix(vertex);
+
+	vertex = RotZ * RotX * RotY;
+}
+
+void Affine_trans::Affine_Trans(Matrix4& vertex, Vector3& scale, Vector3& rotate, Vector3& translation) 
+{
+	identity_matrix(vertex);
+
+	vertex.m[0][0] = scale.x;
+	vertex.m[1][1] = scale.y;
+	vertex.m[2][2] = scale.z;
+	vertex.m[3][3] = 1;
+
+	Matrix4 RotX, RotY, RotZ;
+
+	rotateX(RotX, rotate.x);
+	rotateY(RotY, rotate.y);
+	rotateZ(RotZ, rotate.z);
+
+	vertex = RotZ * RotX * RotY;
+
+	vertex.m[3][0] = translation.x;
+	vertex.m[3][1] = translation.y;
+	vertex.m[3][2] = translation.z;
+
 
 }
 

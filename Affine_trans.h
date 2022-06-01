@@ -17,6 +17,14 @@ class Affine_trans {
 
 	void rotate(Matrix4& vertex, float frequency_x, float frequency_y,float frequency_z);
 
+	void scale(Matrix4& vertex, Vector3& scale);
+
+	void translation(Matrix4& vertex, Vector3& translation);
+
+	void rotate(Matrix4& vertex, Vector3& rotate);
+
+	void Affine_Trans(Matrix4& vertex, Vector3& scale, Vector3& rotate, Vector3& translation);
+
 	void rotateX(Matrix4& vertex, float frequency_x);
 
 	void rotateY(Matrix4& vertex, float frequency_y);

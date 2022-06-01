@@ -76,6 +76,10 @@ class GameScene {
 	float Target_x = 0, Target_y, Target_z;
 	float viewAngle = 0.0f;
 
+	float character_speed_x = 0.2f;
+
+	float rotate_speed = 0.5f;
+
 	//Vector3* Line = nullptr;
 
 	//テクスチャハンドル
@@ -128,6 +132,24 @@ class GameScene {
       {0.0f, 5.0f, 5.0f}
     };
 
+	//キャラクターの移動ベクトル
+	Vector3 move = {0, 0, 0};
+	Vector3 rotate_ = {0, 0, 0};
+	Vector3 scale_ = {1, 1, 1};
+
+	 enum PartId {
+		Root,  //大元
+		Spine, //脊髄
+		Chest, //胸
+		Head,  //頭
+		ArmL,  //左腕
+		ArmR,  //右腕
+		Hip,   //ケツ
+		LegL,  //左足
+		LegR,  //右足
+
+		maxcount
+	};
 
 	Vector3 grit_line_x_s[9];
 	Vector3 grit_line_x_e[9];
