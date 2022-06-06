@@ -95,20 +95,6 @@ class GameScene {
 	Vector3 rotate_ = {0, 0, 0};
 	Vector3 scale_ = {1, 1, 1};
 
-	 enum PartId {
-		Root,  //大元
-		Spine, //脊髄
-		Chest, //胸
-		Head,  //頭
-		ArmL,  //左腕
-		ArmR,  //右腕
-		Hip,   //ケツ
-		LegL,  //左足
-		LegR,  //右足
-
-		maxcount
-	};
-
 	Vector3 grit_line_x_s[9];
 	Vector3 grit_line_x_e[9];
 	Vector3 grit_line_z_s[9];
@@ -117,12 +103,6 @@ class GameScene {
 	Vector4 grit_color_x = {0, 0, 1, 1};
 	Vector4 grit_color_z = {1, 0, 0, 1};
 
-
-	int vertex[12][2] = {{0,1}, {1,2}, {2,3}, {3,0}, {0,4}, {1,5}, {4,5}, {5,6}, {4,7}, {7,6}, {3,7}, {2,6}};
-	Vector4 box_vecter_ = {1, 1, 1, 1};
-	Vector4 box_vecter2_ = {1, 0, 0, 1};
-	Vector4 box_vecter3_ = {1, 1, 0, 1};
-	Vector4 box_vecter4_ = {1, 0, 1, 1};
 
 	//ワールドトランスフォーム
 	//WorldTransform worldTransform_[100];

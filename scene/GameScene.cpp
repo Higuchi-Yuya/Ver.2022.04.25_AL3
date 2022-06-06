@@ -85,11 +85,6 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
-	//ワールドトランスフォームの初期化
-	// for (WorldTransform& worldTransform_ : worldTransform_) {
-	//	worldTransform_.Initialize();
-	//}
-
 	////カメラ視点座標を設定
 	// viewProjection_.eye = {Eye_x, Eye_y, Eye_z};
 
