@@ -1,5 +1,6 @@
 #pragma once
-#include "GameScene.h"
+#include"Matrix4.h"
+#include"Vector3.h"
 #include <math.h>
 
 class Affine_trans {

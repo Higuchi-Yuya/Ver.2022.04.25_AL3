@@ -15,8 +15,8 @@
 #include <math.h>
 #include <random>
 
-#include "Affine_trans.h"
 
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -88,49 +88,7 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 
-	Vector3 box_vecter[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
-	Vector3 box_vecter2[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
-	Vector3 box_vecter3[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
-	Vector3 box_vecter4[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
+	Player* player_ = nullptr;
 
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
@@ -167,10 +125,14 @@ class GameScene {
 	Vector4 box_vecter4_ = {1, 0, 1, 1};
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransform_[100];
+	//WorldTransform worldTransform_[100];
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
 
 	/// <summary>
 	/// ゲームシーン用
