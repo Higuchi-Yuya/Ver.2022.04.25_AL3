@@ -1,8 +1,7 @@
 #include "Player.h"
 
-
-void Player::Initialize(Model* model, uint32_t textureHandle) { 
-	//NULLポインタチェック
+void Player::Initialize(Model* model, uint32_t textureHandle) {
+	// NULLポインタチェック
 	assert(model);
 
 	model_ = model;
@@ -24,6 +23,19 @@ void Player::Update() {
 
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
+	Vector3 rotate = {0, 0, 0};
+
+	//キャラクターの旋回移動
+	if (input_->PushKey(DIK_U)) {
+		rotate = {0, +rotation_speed_y, 0};
+		worldTransform_.rotation_.y += rotate.y;
+	}
+	if (input_->PushKey(DIK_I)) {
+		rotate = {0, -rotation_speed_y, 0};
+		worldTransform_.rotation_.y += rotate.y;
+	}
+
+	//キャラクターの移動処理
 	if (input_->PushKey(DIK_LEFT)) {
 		move = {-character_speed_x, 0, 0};
 
@@ -44,6 +56,14 @@ void Player::Update() {
 		worldTransform_.translation_.y += move.y;
 	}
 
+	//キャラクターの攻撃処理
+	Attack();
+
+	//弾更新
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 	// 範囲を超えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -MoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +MoveLimitX);
@@ -51,7 +71,10 @@ void Player::Update() {
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +MoveLimitY);
 
 	//ベクトルの加算
-	trans->translation(worldTransform_.matWorld_, worldTransform_.translation_);
+	trans->identity_matrix(worldTransform_.matWorld_);
+	trans->Affine_Trans(
+	  worldTransform_.matWorld_, worldTransform_.scale_, worldTransform_.rotation_,
+	  worldTransform_.translation_);
 
 	//行列の転送
 	worldTransform_.TransferMatrix();
@@ -59,10 +82,29 @@ void Player::Update() {
 	//デバッグテキスト表示
 	debugText_->SetPos(50, 150);
 	debugText_->Printf(
-	  "Pos:(%f,%f,%f)", worldTransform_.translation_.x,
-	  worldTransform_.translation_.y, worldTransform_.translation_.z);
+	  "Pos:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y,
+	  worldTransform_.translation_.z);
+}
+
+void Player::Attack() {
+
+	if (input_->PushKey(DIK_Y)) {
+
+		//弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		//弾を登録する
+		bullet_ = newBullet;
+	}
+
 }
 
 void Player::Draw(ViewProjection viewProjection) {
+	
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
 }

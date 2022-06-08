@@ -19,9 +19,7 @@ Vector3 GameScene::Get_Reference_point(Vector3& vertex) { return vertex; }
 
 double GameScene::Rad(double degree) { return degree * Pi / 180; }
 
-void GameScene::scale(
-  Vector3& vertex, Vector3& reference_point, float expansion_rate_x, float expansion_rate_y,
-  float expansion_rate_z) {
+void GameScene::scale(Vector3& vertex, Vector3& reference_point, float expansion_rate_x, float expansion_rate_y,float expansion_rate_z) {
 	float w = 0;
 	//拡大縮小
 	vertex -= reference_point;
@@ -39,9 +37,7 @@ void GameScene::translation(Vector3& vertex, float Tx, float Ty, float Tz) {
 	vertex.z = (vertex.x * 0) + (vertex.y * 0) + (vertex.z * 1) + (Tz * w);
 }
 
-void GameScene::rotate(
-  Vector3& vertex, Vector3& reference_point, float frequency_x, float frequency_y,
-  float frequency_z) {
+void GameScene::rotate(Vector3& vertex, Vector3& reference_point, float frequency_x, float frequency_y,float frequency_z) {
 	float w = 0;
 	float h_x, h_y, h_z;
 

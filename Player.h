@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include "Affine_trans.h"
+#include "PlayerBullet.h"
 class Player {
   public:
 	//初期化
@@ -15,6 +16,8 @@ class Player {
 
 	//更新
 	void Update();
+
+	void Attack();
 
 	//描画
 	void Draw(ViewProjection viewProjection);
@@ -32,10 +35,12 @@ class Player {
 
 	//プレイヤー関連
 	//アフィン
-	
+	PlayerBullet* bullet_ = nullptr;
 	//スピード
 	float character_speed_x = 0.2f;
 	float character_speed_y = 0.2f;
+
+	float rotation_speed_y = 0.2f;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 

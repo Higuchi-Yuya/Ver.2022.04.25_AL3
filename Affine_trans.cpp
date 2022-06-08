@@ -18,7 +18,6 @@ void Affine_trans::identity_matrix(Matrix4& vertex)
 	v.m[2][2] = 1;
 	v.m[3][3] = 1;
 	vertex = v;
-	
 }
 
 
@@ -104,7 +103,7 @@ void Affine_trans::translation(Matrix4& vertex, Vector3& translation)
 void Affine_trans::rotate(Matrix4& vertex, Vector3& rotate) 
 {
 	Matrix4 RotX, RotY, RotZ;
-
+	
 	rotateX(RotX, rotate.x);
 	rotateY(RotY, rotate.y);
 	rotateZ(RotZ, rotate.z);
