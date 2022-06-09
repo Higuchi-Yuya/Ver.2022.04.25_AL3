@@ -25,6 +25,9 @@ void Player::Update() {
 	Vector3 move = {0, 0, 0};
 	Vector3 rotate = {0, 0, 0};
 
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) { return bullet->IsDead(); });
+
 	//キャラクターの旋回移動
 	if (input_->PushKey(DIK_U)) {
 		rotate = {0, +rotation_speed_y, 0};
@@ -64,6 +67,7 @@ void Player::Update() {
 		bullet->Update();
 	}
 
+	
 	// 範囲を超えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -MoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +MoveLimitX);
@@ -90,12 +94,17 @@ void Player::Attack() {
 
 	if (input_->TriggerKey(DIK_Y)) {
 
-		//自キャラの座標をコピー
-		Vector3 position = worldTransform_.translation_;
+		//弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+		Affine_trans trans;
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		velocity = velocity * worldTransform_.matWorld_;
 
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, position);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));

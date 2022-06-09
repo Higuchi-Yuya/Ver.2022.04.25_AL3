@@ -136,4 +136,28 @@ void Affine_trans::Affine_Trans(
 
 }
 
+void Affine_trans::Affine_Mul_Vel(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation, Vector3& velocity) 
+{
+	identity_matrix(mat);
+
+	mat.m[0][0] = scale.x;
+	mat.m[1][1] = scale.y;
+	mat.m[2][2] = scale.z;
+	mat.m[3][3] = 1;
+
+	Matrix4 RotX, RotY, RotZ;
+
+	rotateX(RotX, rotate.x);
+	rotateY(RotY, rotate.y);
+	rotateZ(RotZ, rotate.z);
+
+	mat = RotZ * RotX * RotY;
+
+	mat.m[3][0] = translation.x;
+	mat.m[3][1] = translation.y;
+	mat.m[3][2] = translation.z;
+
+	velocity * mat;
+}
+
 

@@ -26,6 +26,8 @@ class Affine_trans {
 
 	void Affine_Trans(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation);
 
+	void Affine_Mul_Vel(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation, Vector3& velocity);
+
 	void rotateX(Matrix4& mat, float frequency_x);
 
 	void rotateY(Matrix4& mat, float frequency_y);
