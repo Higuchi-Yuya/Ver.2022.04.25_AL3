@@ -15,7 +15,7 @@
 #include <math.h>
 #include <random>
 
-
+#include "Enemy.h"
 #include "Player.h"
 
 /// <summary>
@@ -89,6 +89,8 @@ class GameScene {
 	Model* model_ = nullptr;
 
 	Player* player_ = nullptr;
+
+	Enemy* enemy_;
 
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};

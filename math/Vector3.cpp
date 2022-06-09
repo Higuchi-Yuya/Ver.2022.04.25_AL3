@@ -1,6 +1,6 @@
 #include "Vector3.h"
 
-Vector3& Vector3::operator*(const Matrix4& m) { 
+Vector3& Vector3::operator*(const Matrix4& m) {
 	Vector3 temp(*this);
 	
 	temp.x = this->x * m.m[0][0] + this->y * m.m[1][0] + this->z * m.m[2][0];

@@ -21,7 +21,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 }
 
 void PlayerBullet::Update() 
-{ 
+{
 	//À•W‚ğˆÚ“®‚³‚¹‚é(‚PƒtƒŒ[ƒ€•ª‚ÌˆÚ“®—Ê‚ğ‘«‚µ‚±‚Ş)
 	worldTransform_.translation_ += velocity_;
 

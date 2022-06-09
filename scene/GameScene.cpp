@@ -13,6 +13,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete model_;
 	delete player_;
+	delete enemy_;
 }
 
 Vector3 GameScene::Get_Reference_point(Vector3& vertex) { return vertex; }
@@ -78,9 +79,14 @@ void GameScene::Initialize() {
 	//自キャラの生成
 	player_ = new Player();
 
+	//敵の生成
+	enemy_ = new Enemy();
+
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
+	//敵の初期化
+	enemy_->Initialize(model_);
 	////カメラ視点座標を設定
 	// viewProjection_.eye = {Eye_x, Eye_y, Eye_z};
 
@@ -159,7 +165,7 @@ void GameScene::Update() {
 
 #pragma region キャラクター移動処理
 	player_->Update();
-	
+	enemy_->Update();
 #pragma endregion
 
 #ifdef _DEBUG
@@ -211,6 +217,9 @@ void GameScene::Draw() {
 	
 	//自キャラの描画
 	player_->Draw(viewProjection_);
+
+	//敵キャラの描画
+	enemy_->Draw(viewProjection_);
 
 	//ライン描画が参照するビュープロジェクションを指定する
 
