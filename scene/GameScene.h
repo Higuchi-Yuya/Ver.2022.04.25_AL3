@@ -13,6 +13,10 @@
 #include "PrimitiveDrawer.h"
 #include "AxisIndicator.h"
 #include <math.h>
+#include <random>
+
+
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,6 +68,18 @@ class GameScene {
 
 	float grit_x = -20;
 	float grit_z = -20;
+	float Sx, Sy, Sz;
+	float Rx[100], Ry[100], Rz[100];
+	float Tx[100], Ty[100], Tz[100];
+
+	float Eye_x, Eye_y, Eye_z = -50;
+	float Target_x = 0, Target_y, Target_z;
+	float viewAngle = 0.0f;
+
+	float character_speed_x = 0.2f;
+
+	float rotate_speed = 0.5f;
+
 	//Vector3* Line = nullptr;
 
 	//テクスチャハンドル
@@ -72,50 +88,12 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 
-	Vector3 box_vecter[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
+	Player* player_ = nullptr;
 
-	Vector3 box_vecter2[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
-	Vector3 box_vecter3[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
-	Vector3 box_vecter4[8] = {
-	  {0.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 0.0f},
-      {5.0f, 0.0f, 5.0f},
-      {0.0f, 0.0f, 5.0f},
-	  {0.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 0.0f},
-      {5.0f, 5.0f, 5.0f},
-      {0.0f, 5.0f, 5.0f}
-    };
-
+	//キャラクターの移動ベクトル
+	Vector3 move = {0, 0, 0};
+	Vector3 rotate_ = {0, 0, 0};
+	Vector3 scale_ = {1, 1, 1};
 
 	Vector3 grit_line_x_s[9];
 	Vector3 grit_line_x_e[9];
@@ -126,17 +104,15 @@ class GameScene {
 	Vector4 grit_color_z = {1, 0, 0, 1};
 
 
-	int vertex[12][2] = {{0,1}, {1,2}, {2,3}, {3,0}, {0,4}, {1,5}, {4,5}, {5,6}, {4,7}, {7,6}, {3,7}, {2,6}};
-	Vector4 box_vecter_ = {1, 1, 1, 1};
-	Vector4 box_vecter2_ = {1, 0, 0, 1};
-	Vector4 box_vecter3_ = {1, 1, 0, 1};
-	Vector4 box_vecter4_ = {1, 0, 1, 1};
-
 	//ワールドトランスフォーム
-	WorldTransform worldTransform_;
+	//WorldTransform worldTransform_[100];
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
 
 	/// <summary>
 	/// ゲームシーン用
