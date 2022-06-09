@@ -10,26 +10,26 @@ class Affine_trans {
 
 	double Rad(double degree);
 
-	void identity_matrix(Matrix4& vertex);
+	void identity_matrix(Matrix4& mat);
 
-	void scale(Matrix4& vertex, float expansion_rate_x, float expansion_rate_y,float expansion_rate_z);
+	void scale(Matrix4& mat, float expansion_rate_x, float expansion_rate_y,float expansion_rate_z);
 
-	void translation(Matrix4& vertex, float Tx, float Ty, float Tz);
+	void translation(Matrix4& mat, float Tx, float Ty, float Tz);
 
-	void rotate(Matrix4& vertex, float frequency_x, float frequency_y,float frequency_z);
+	void rotate(Matrix4& mat, float frequency_x, float frequency_y, float frequency_z);
 
-	void scale(Matrix4& vertex, Vector3& scale);
+	void scale(Matrix4& mat, Vector3& scale);
 
-	void translation(Matrix4& vertex, Vector3& translation);
+	void translation(Matrix4& mat, Vector3& translation);
 
-	void rotate(Matrix4& vertex, Vector3& rotate);
+	void rotate(Matrix4& mat, Vector3& rotate);
 
-	void Affine_Trans(Matrix4& vertex, Vector3& scale, Vector3& rotate, Vector3& translation);
+	void Affine_Trans(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation);
 
-	void rotateX(Matrix4& vertex, float frequency_x);
+	void rotateX(Matrix4& mat, float frequency_x);
 
-	void rotateY(Matrix4& vertex, float frequency_y);
+	void rotateY(Matrix4& mat, float frequency_y);
 
-	void rotateZ(Matrix4& vertex, float frequency_z);
+	void rotateZ(Matrix4& mat, float frequency_z);
   private:
 };
