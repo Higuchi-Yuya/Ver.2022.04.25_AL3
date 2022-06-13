@@ -38,6 +38,7 @@ class Player {
 	//プレイヤー関連
 	//アフィン
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
 	//スピード
 	float character_speed_x = 0.2f;
 	float character_speed_y = 0.2f;

@@ -69,6 +69,22 @@ void Affine_trans::rotateZ(Matrix4& mat, float frequency_z) {
 	mat.m[3][3] = 1;
 }
 
+void Affine_trans::Inverse(Matrix4& mat) {
+	float mat4[4][8] = {
+	  {mat.m[0][0], mat.m[0][1], mat.m[0][2], mat.m[0][3], 1, 0, 0, 0},
+	  {mat.m[1][0], mat.m[1][1], mat.m[1][2], mat.m[1][3], 0, 1, 0, 0},
+	  {mat.m[2][0], mat.m[2][1], mat.m[2][2], mat.m[2][3], 0, 0, 1, 0},
+	  {mat.m[3][0], mat.m[3][1], mat.m[3][2], mat.m[3][3], 0, 0, 0, 1}
+    };
+
+
+
+	//s—ñ‚ÌŒğŠ·
+
+
+	//s—ñ‚ğ‘ã“ü
+
+}
 void Affine_trans::rotate(Matrix4& mat, float frequency_x, float frequency_y, float frequency_z) 
 {
 	Matrix4 RotX, RotY, RotZ;

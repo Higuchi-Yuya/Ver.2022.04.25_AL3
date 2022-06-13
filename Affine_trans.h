@@ -33,5 +33,7 @@ class Affine_trans {
 	void rotateY(Matrix4& mat, float frequency_y);
 
 	void rotateZ(Matrix4& mat, float frequency_z);
+
+	void Inverse(Matrix4& mat);
   private:
 };
