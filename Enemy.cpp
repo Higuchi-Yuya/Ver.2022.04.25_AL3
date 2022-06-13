@@ -78,16 +78,16 @@ void Enemy::Approach_Update()
 		phase_ = Phase::Laeve;
 	}
 
-	////発射タイマーをデクリメント
-	//fireTimer_--;
+	//発射タイマーをデクリメント
+	fireTimer_--;
 
-	////規定時間に到達したら
-	//if (fireTimer_ <= 0) {
-	//	//弾を発射
-	//	Fire();
-	//	//発射タイマーを初期化
-	//	fireTimer_ = kFireInterval;
-	//}
+	//規定時間に到達したら
+	if (fireTimer_ <= 0) {
+		//弾を発射
+		Fire();
+		//発射タイマーを初期化
+		fireTimer_ = kFireInterval;
+	}
 }
 
 void Enemy::Laeve_Update() 
