@@ -12,6 +12,7 @@
 #include "Affine_trans.h"
 #include "PlayerBullet.h"
 class Player {
+
   public:
 	//初期化
 	void Initialize(Model* model, uint32_t textureHandle);
@@ -24,8 +25,21 @@ class Player {
 	//描画
 	void Draw(ViewProjection viewProjection);
 
-  private:
 
+  private:
+	//移動処理
+	void Move();
+
+	void Rotation();
+
+	//行列変換
+	void Trans_Update();
+
+	//デバッグテキスト
+	void Debug_Text();
+
+//メンバ変数
+  private:
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
@@ -36,7 +50,6 @@ class Player {
 	Model* model_ = nullptr;
 
 	//プレイヤー関連
-	//アフィン
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 	//スピード
@@ -44,6 +57,7 @@ class Player {
 	float character_speed_y = 0.2f;
 
 	float rotation_speed_y = 0.2f;
+
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 

@@ -128,8 +128,7 @@ void Affine_trans::rotate(Matrix4& mat, Vector3& rotate) {
 	mat = RotZ * RotX * RotY;
 }
 
-void Affine_trans::Affine_Trans(
-  Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation) {
+void Affine_trans::Affine_Trans(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation) {
 	identity_matrix(mat);
 
 	mat.m[0][0] = scale.x;

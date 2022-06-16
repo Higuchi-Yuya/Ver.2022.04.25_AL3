@@ -5,13 +5,13 @@
 
 #include "Affine_trans.h"
 #include "EnemyBullet.h"
+
 enum class Phase {
 	Approach, //Ú‹ß‚·‚é
 	Laeve,    //—£’E‚·‚é
-
 };
 
-class Enemy 
+class Enemy
 {
   public:
 	//“G‚ÌŠî–{“I‚ÈŠÖ”
