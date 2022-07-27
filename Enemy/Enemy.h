@@ -11,6 +11,8 @@ enum class Phase {
 	Laeve,    //離脱する
 };
 
+class Player;
+
 class Enemy
 {
   public:
@@ -26,10 +28,17 @@ class Enemy
 	//離脱フェーズ関連の関数
 	void Laeve_Update();
 
+	// 敵キャラに自キャラのアドレスを渡す
+	void SetPlayer(Player* player) { player_ = player; }
+
 	//弾の発射関数
 	void Fire();
 
 	
+  
+	// ワールド座標を取得する
+	Vector3 GetWorldPosition();
+
   public:
 	//発射間隔
 	static const int kFireInterval = 60;
@@ -57,4 +66,7 @@ class Enemy
 
 	//フェーズ
 	Phase phase_ = Phase::Approach;
+
+	// 自キャラ
+	Player* player_ = nullptr;
 };

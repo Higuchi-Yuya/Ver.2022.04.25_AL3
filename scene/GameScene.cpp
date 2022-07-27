@@ -87,6 +87,8 @@ void GameScene::Initialize() {
 
 	//敵の初期化
 	enemy_->Initialize(model_);
+
+	enemy_->SetPlayer(player_);
 	////カメラ視点座標を設定
 	// viewProjection_.eye = {Eye_x, Eye_y, Eye_z};
 

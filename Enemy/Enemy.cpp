@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 
 void Enemy::Initialize(Model* model) {
 
@@ -102,12 +103,19 @@ void Enemy::Laeve_Update()
 
 void Enemy::Fire() 
 {
-	//弾の速度
-	const float kBulletSpeed = 1.0f;
-	Vector3 velocity(0, 0, -kBulletSpeed);
+	assert(player_);
 
-	//速度ベクトルを自機の向きに合わせて回転させる
-	velocity = velocity * worldTransform_.matWorld_;
+	//弾の速度
+	const float kBulletSpeed = 0.1f;
+	
+	Vector3 enemy_pos = GetWorldPosition();
+	Vector3 player_pos = player_->GetWorldPosition();
+	Vector3 velocity = player_pos - enemy_pos;
+	velocity.normalize();
+	velocity *= kBulletSpeed;
+
+	////速度ベクトルを自機の向きに合わせて回転させる
+	//velocity = velocity * worldTransform_.matWorld_;
 
 	//弾を生成し、初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
@@ -115,5 +123,17 @@ void Enemy::Fire()
 
 	//弾を登録する
 	bullets_.push_back(std::move(newBullet));
+}
+
+Vector3 Enemy::GetWorldPosition() 
+{ 
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
 }
 

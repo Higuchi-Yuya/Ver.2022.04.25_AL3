@@ -1,4 +1,5 @@
 #include "Vector3.h"
+#include <cmath>
 
 Vector3& Vector3::operator*(const Matrix4& m) {
 	Vector3 temp(*this);
@@ -8,4 +9,27 @@ Vector3& Vector3::operator*(const Matrix4& m) {
 	temp.z = this->x * m.m[0][2] + this->y * m.m[1][2] + this->z * m.m[2][2];
 
 	return temp;
+}
+
+
+
+const Vector3 operator-(const Vector3& v1, const Vector3& v2) 
+{ 
+	Vector3 temp(v1);
+	return temp -= v2;
+}
+
+float Vector3::length() const 
+{ 
+	return std::sqrt(x * x + y * y + z * z); 
+}
+
+Vector3& Vector3::normalize() 
+{
+	float len = length();
+	if (len != 0) {
+		return *this /= length();
+	}
+
+	return *this;
 }
