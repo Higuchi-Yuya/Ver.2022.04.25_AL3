@@ -67,6 +67,102 @@ void GameScene::rotate(Vector3& vertex, Vector3& reference_point, float frequenc
 	vertex += reference_point;
 }
 
+void GameScene::CheckAllCollisions() 
+{
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	float radiusA = 1.0f, radiusB = 1.0f;
+
+	// 自弾リストの取得
+	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+
+	// 敵弾リストの取得
+	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
+
+	#pragma region 自キャラと敵弾の当たり判定
+	// 自キャラのワールド座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) 
+	{
+		// 敵弾のワールド座標
+		posB = bullet->GetBulletWorldPosition();
+
+		// 座標Aと座標Bの距離を求める
+		float result_pos_x = (posB.x - posA.x) * (posB.x - posA.x);
+		float result_pos_y = (posB.y - posA.y) * (posB.y - posA.y);
+		float result_pos_z = (posB.z - posA.z) * (posB.z - posA.z);
+		float result_pos = result_pos_x + result_pos_y + result_pos_z;
+		// 半径
+		float result_radius = (radiusA + radiusB) * (radiusA + radiusB);
+
+		if (result_pos <= result_radius) 
+		{
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+	#pragma endregion
+
+	#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラのワールド座標
+	posA = enemy_->GetWorldPosition();
+
+	// 自弾と敵キャラ全ての当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		// 敵弾のワールド座標
+		posB = bullet->GetBulletWorldPosition();
+
+		// 座標Aと座標Bの距離を求める
+		float result_pos_x = (posB.x - posA.x) * (posB.x - posA.x);
+		float result_pos_y = (posB.y - posA.y) * (posB.y - posA.y);
+		float result_pos_z = (posB.z - posA.z) * (posB.z - posA.z);
+		float result_pos = result_pos_x + result_pos_y + result_pos_z;
+		// 半径
+		float result_radius = (radiusA + radiusB) * (radiusA + radiusB);
+
+		if (result_pos <= result_radius) {
+			// 敵キャラの衝突時コールバックを呼び出す
+			enemy_->OnCollision();
+			// 自弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+	#pragma endregion
+
+	#pragma region 自弾と敵弾の当たり判定
+	// 自弾と敵弾全ての当たり判定
+	for (const std::unique_ptr<PlayerBullet>& playerbullet : playerBullets) {
+		// 自弾のワールド座標
+		posA = playerbullet->GetBulletWorldPosition();
+		for (const std::unique_ptr<EnemyBullet>& enemybullet : enemyBullets) {
+			// 敵弾のワールド座標
+			posB = enemybullet->GetBulletWorldPosition();
+
+			// 座標Aと座標Bの距離を求める
+			float result_pos_x = (posB.x - posA.x) * (posB.x - posA.x);
+			float result_pos_y = (posB.y - posA.y) * (posB.y - posA.y);
+			float result_pos_z = (posB.z - posA.z) * (posB.z - posA.z);
+			float result_pos = result_pos_x + result_pos_y + result_pos_z;
+			// 半径
+			float result_radius = (radiusA + radiusB) * (radiusA + radiusB);
+
+			if (result_pos <= result_radius) {
+				// 自弾の衝突時コールバックを呼び出す
+				playerbullet->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				enemybullet->OnCollision();
+			}
+		}
+	}
+	#pragma endregion
+
+}
+
 void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
@@ -187,7 +283,7 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 
-	
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {

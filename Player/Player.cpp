@@ -84,6 +84,8 @@ Vector3 Player::GetWorldPosition()
 	return worldPos; 
 }
 
+void Player::OnCollision() {}
+
 void Player::Move() {
 	Vector3 move = {0, 0, 0};
 	constexpr float MoveLimitX = 35;

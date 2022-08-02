@@ -34,10 +34,14 @@ class Enemy
 	//弾の発射関数
 	void Fire();
 
-	
-  
 	// ワールド座標を取得する
 	Vector3 GetWorldPosition();
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	// 弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
 
   public:
 	//発射間隔

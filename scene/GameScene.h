@@ -59,6 +59,7 @@ class GameScene {
 
 	void rotate(Vector3& vertex, Vector3& reference_point, float frequency_x, float frequency_y, float frequency_z);
 
+	void CheckAllCollisions();
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;

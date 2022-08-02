@@ -15,6 +15,11 @@ class PlayerBullet
 
 	bool IsDead() const { return isDead_; }
 
+	// ワールド弾座標を取得
+	Vector3 GetBulletWorldPosition();
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;

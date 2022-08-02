@@ -15,7 +15,7 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.Initialize();
 
 	//初期座標の設定
-	worldTransform_.translation_ = {0, 3, 30};
+	worldTransform_.translation_ = {20, 3, 30};
 
 }
 
@@ -72,7 +72,7 @@ void Enemy::Approach_Update()
 	Vector3 move = {0, 0, 0};
 	//移動(ベクトルを加算)
 	move = {0, 0, -enemy_speed_z};
-	worldTransform_.translation_.z += move.z;
+	//worldTransform_.translation_.z += move.z;
 
 	//規定の位置に到達したら離脱
 	if (worldTransform_.translation_.z < 0.0f) {
@@ -136,4 +136,8 @@ Vector3 Enemy::GetWorldPosition()
 
 	return worldPos;
 }
+
+
+
+void Enemy::OnCollision() {}
 

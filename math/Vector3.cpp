@@ -19,6 +19,15 @@ const Vector3 operator-(const Vector3& v1, const Vector3& v2)
 	return temp -= v2;
 }
 
+const Vector3 operator*(const Vector3& v1, const Vector3& v2) 
+{ 
+	Vector3 temp(v1);
+	temp.x = v1.x * v2.x;
+	temp.y = v1.y * v2.y;
+	temp.z = v1.z * v2.z;
+	return temp;
+}
+
 float Vector3::length() const 
 { 
 	return std::sqrt(x * x + y * y + z * z); 
