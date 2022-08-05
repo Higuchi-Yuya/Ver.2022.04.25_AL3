@@ -13,6 +13,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換を初期化
 	worldTransform_.Initialize();
+	
 }
 
 void Player::Update() {
@@ -125,11 +126,11 @@ void Player::Rotation()
 
 	//キャラクターの旋回移動
 	if (input_->PushKey(DIK_U)) {
-		rotate = {0, +rotation_speed_y, 0};
+		rotate = {0, -rotation_speed_y, 0};
 		worldTransform_.rotation_.y += rotate.y;
 	}
 	if (input_->PushKey(DIK_I)) {
-		rotate = {0, -rotation_speed_y, 0};
+		rotate = {0, +rotation_speed_y, 0};
 		worldTransform_.rotation_.y += rotate.y;
 	}
 }
@@ -137,12 +138,13 @@ void Player::Rotation()
 void Player::Trans_Update() 
 {
 	Affine_trans* trans = nullptr;
-
+	
 	//ベクトルの加算
 	trans->identity_matrix(worldTransform_.matWorld_);
 	trans->Affine_Trans(
 	  worldTransform_.matWorld_, worldTransform_.scale_, worldTransform_.rotation_,
 	  worldTransform_.translation_);
+	
 
 	//行列の転送
 	worldTransform_.TransferMatrix();

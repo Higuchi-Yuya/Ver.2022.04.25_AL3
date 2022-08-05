@@ -14,6 +14,8 @@ GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 	delete enemy_;
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 Vector3 GameScene::Get_Reference_point(Vector3& vertex) { return vertex; }
@@ -172,11 +174,18 @@ void GameScene::Initialize() {
 	//３Dモデルの生成
 	model_ = Model::Create();
 
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
 	//自キャラの生成
 	player_ = new Player();
 
 	//敵の生成
 	enemy_ = new Enemy();
+
+	skydome_ = new Skydome();
+
+	// 天球の初期化
+	skydome_->Initialize(modelSkydome_);
 
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
@@ -185,6 +194,9 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_);
 
 	enemy_->SetPlayer(player_);
+
+
+
 	////カメラ視点座標を設定
 	// viewProjection_.eye = {Eye_x, Eye_y, Eye_z};
 
@@ -264,6 +276,7 @@ void GameScene::Update() {
 #pragma region キャラクター移動処理
 	player_->Update();
 	enemy_->Update();
+	skydome_->Update();
 #pragma endregion
 
 #ifdef _DEBUG
@@ -271,7 +284,9 @@ void GameScene::Update() {
 		isDebugCameraActive_ = true;
 	}
 #endif
-
+	if (input_->TriggerKey(DIK_SPACE)) {
+		isDebugCameraActive_ = true;
+	}
 	//カメラの処理
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
@@ -319,6 +334,9 @@ void GameScene::Draw() {
 	//敵キャラの描画
 	enemy_->Draw(viewProjection_);
 
+	// 天球の描画
+	skydome_->Draw(viewProjection_);
+	
 	//ライン描画が参照するビュープロジェクションを指定する
 
 	//グリット線の描画

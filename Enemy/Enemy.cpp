@@ -72,10 +72,10 @@ void Enemy::Approach_Update()
 	Vector3 move = {0, 0, 0};
 	//ˆÚ“®(ƒxƒNƒgƒ‹‚ð‰ÁŽZ)
 	move = {0, 0, -enemy_speed_z};
-	//worldTransform_.translation_.z += move.z;
+	worldTransform_.translation_.z += move.z;
 
 	//‹K’è‚ÌˆÊ’u‚É“ž’B‚µ‚½‚ç—£’E
-	if (worldTransform_.translation_.z < 0.0f) {
+	if (worldTransform_.translation_.z < -5.0f) {
 		phase_ = Phase::Laeve;
 	}
 

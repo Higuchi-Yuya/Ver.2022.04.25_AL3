@@ -17,7 +17,7 @@
 
 #include "Enemy.h"
 #include "Player.h"
-
+#include "Skydome.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -89,9 +89,14 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 
+	Model* modelSkydome_ = nullptr;
+
+	// 呼び出し宣言
 	Player* player_ = nullptr;
 
 	Enemy* enemy_;
+
+	Skydome* skydome_ = nullptr;
 
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};

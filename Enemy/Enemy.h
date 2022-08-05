@@ -55,7 +55,7 @@ class Enemy
 
 	float enemy_speed_x = 0.1f;
 	float enemy_speed_y = 0.1f;
-	float enemy_speed_z = 0.1f;
+	float enemy_speed_z = 0.05f;
 	
 	//発射タイマー
 	int32_t fireTimer_ = 0;
