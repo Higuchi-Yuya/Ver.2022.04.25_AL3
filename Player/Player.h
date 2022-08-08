@@ -14,6 +14,8 @@
 class Player {
 
   public:
+	~Player();
+
 	//初期化
 	void Initialize(Model* model, uint32_t textureHandle);
 
@@ -34,6 +36,7 @@ class Player {
 	// 弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
+	void SetWorldTransformParent(WorldTransform *worldtransform);
   private:
 	//移動処理
 	void Move();
@@ -53,7 +56,7 @@ class Player {
 
 	//ワールド変換データ
 	WorldTransform worldTransform_;
-
+	WorldTransform cameraworld_;
 	//モデル
 	Model* model_ = nullptr;
 
@@ -64,7 +67,7 @@ class Player {
 	float character_speed_x = 0.2f;
 	float character_speed_y = 0.2f;
 
-	float rotation_speed_y = 0.2f;
+	float rotation_speed_y = 0.01f;
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;

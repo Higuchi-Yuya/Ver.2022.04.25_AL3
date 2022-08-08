@@ -16,6 +16,7 @@ GameScene::~GameScene() {
 	delete enemy_;
 	delete skydome_;
 	delete modelSkydome_;
+	delete railcamera_;
 }
 
 Vector3 GameScene::Get_Reference_point(Vector3& vertex) { return vertex; }
@@ -176,24 +177,36 @@ void GameScene::Initialize() {
 
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
+	cameraWorldTransform_.Initialize();
+	cameraWorldTransform_.translation_.z = -50.0f;
+
 	//自キャラの生成
 	player_ = new Player();
 
 	//敵の生成
 	enemy_ = new Enemy();
 
+	//天球の生成
 	skydome_ = new Skydome();
 
-	// 天球の初期化
-	skydome_->Initialize(modelSkydome_);
+	// レールカメラの生成
+	railcamera_ = new RailCamera();
+
+	// レールカメラの初期化
+	railcamera_->Initialize(cameraWorldTransform_);
 
 	//自キャラの初期化
+	
 	player_->Initialize(model_, textureHandle_);
+	player_->SetWorldTransformParent(railcamera_->GetWorldTransform());
 
 	//敵の初期化
 	enemy_->Initialize(model_);
 
 	enemy_->SetPlayer(player_);
+
+	// 天球の初期化
+	skydome_->Initialize(modelSkydome_);
 
 
 
@@ -214,12 +227,13 @@ void GameScene::Initialize() {
 
 	////ニアクリップ距離を設定
 	// viewProjection_.nearZ = 52.0f;
-
+	
 	////ファークリップ距離を設定
-	// viewProjection_.farZ = 53.0f;
+	//viewProjection_.farZ = 12.0f;
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
+
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -273,11 +287,22 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+#pragma region レールカメラの処理
+	railcamera_->Update();
+#pragma endregion
+
 #pragma region キャラクター移動処理
 	player_->Update();
 	enemy_->Update();
+	
+#pragma endregion
+
+#pragma region 天球の処理
 	skydome_->Update();
 #pragma endregion
+
+
+
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_SPACE)) {
@@ -329,13 +354,13 @@ void GameScene::Draw() {
 	/// </summary>
 	
 	//自キャラの描画
-	player_->Draw(viewProjection_);
+	player_->Draw(railcamera_->GetViewProjection());
 
 	//敵キャラの描画
-	enemy_->Draw(viewProjection_);
+	enemy_->Draw(railcamera_->GetViewProjection());
 
 	// 天球の描画
-	skydome_->Draw(viewProjection_);
+	skydome_->Draw(railcamera_->GetViewProjection());
 	
 	//ライン描画が参照するビュープロジェクションを指定する
 

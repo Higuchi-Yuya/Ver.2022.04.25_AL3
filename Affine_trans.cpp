@@ -1,4 +1,5 @@
 #include "Affine_trans.h"
+#include <cmath>
 
 double Pi = 3.14159265;
 
@@ -35,33 +36,53 @@ void Affine_trans::translation(Matrix4& mat, float Tx, float Ty, float Tz) {
 
 void Affine_trans::rotateX(Matrix4& mat, float frequency_x) {
 	// XÇÃâÒì]
-	mat.m[0][0] = 1;
-	mat.m[1][1] = cos(Rad(frequency_x));
-	mat.m[1][2] = sin(Rad(frequency_x));
-	mat.m[2][1] = -sin(Rad(frequency_x));
-	mat.m[2][2] = cos(Rad(frequency_x));
-	mat.m[3][3] = 1;
+	float sin = std::sin(frequency_x);
+	float cos = std::cos(frequency_x);
+
+	Matrix4 result
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cos , sin , 0.0f,
+		0.0f, -sin, cos , 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	mat = result;
 }
 
 void Affine_trans::rotateY(Matrix4& mat, float frequency_y) {
 	// YÇÃâÒì]
-	mat.m[0][0] = cos(Rad(frequency_y));
-	mat.m[0][2] = -sin(Rad(frequency_y));
-	mat.m[1][1] = 1;
-	mat.m[2][0] = sin(Rad(frequency_y));
-	mat.m[2][2] = cos(Rad(frequency_y));
-	mat.m[3][3] = 1;
+	float sin = std::sin(frequency_y);
+	float cos = std::cos(frequency_y);
+
+	Matrix4 result
+	{
+		cos , 0.0f, -sin, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    sin , 0.0f, cos , 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	mat = result;
 }
 
 void Affine_trans::rotateZ(Matrix4& mat, float frequency_z) {
 	// ZÇÃâÒì]
-	mat.m[0][0] = cos(Rad(frequency_z));
-	mat.m[0][1] = sin(Rad(frequency_z));
-	mat.m[1][0] = -sin(Rad(frequency_z));
-	mat.m[1][1] = cos(Rad(frequency_z));
-	mat.m[2][2] = 1;
-	mat.m[3][3] = 1;
+	float sin = std::sin(frequency_z);
+	float cos = std::cos(frequency_z);
+
+	Matrix4 result
+	{
+		cos,  sin,  0.0f, 0.0f, 
+		-sin, cos,  0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+	    0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	mat = result;
 }
+
+
 
 void Affine_trans::Inverse(Matrix4& mat) {
 	float mat4[4][8] = {
@@ -75,6 +96,32 @@ void Affine_trans::Inverse(Matrix4& mat) {
 
 	//çsóÒÇë„ì¸
 }
+
+void Affine_trans::Vec3conversion(Vector3& v, const Matrix4& m) {
+	float W = v.x * m.m[0][3] + v.y * m.m[1][3] + v.z * m.m[2][3] + m.m[3][3];
+	Vector3 result
+	{
+	  (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0]) / W,
+	  (v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1]) / W,
+	  (v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]) / W
+	};
+
+	v = result;
+}
+
+void Affine_trans::Vec3conversion2(Vector3& v, const Matrix4& m) 
+{
+	Vector3 result
+	{
+	  (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0]),
+	  (v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1]),
+	  (v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2])
+	};
+	v = result;
+}
+
+
+
 void Affine_trans::rotate(Matrix4& mat, float frequency_x, float frequency_y, float frequency_z) {
 	Matrix4 RotX, RotY, RotZ;
 
@@ -96,22 +143,32 @@ void Affine_trans::scale(Matrix4& mat, Vector3& scale) {
 }
 
 void Affine_trans::translation(Matrix4& mat, Vector3& translation) {
-	identity_matrix(mat);
-	mat.m[3][0] = translation.x;
-	mat.m[3][1] = translation.y;
-	mat.m[3][2] = translation.z;
+	Matrix4 result
+	{
+		1.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+		translation.x, translation.y, translation.z, 1.0f
+	};
+
+	mat = result;
 }
 
 void Affine_trans::rotate(Matrix4& mat, Vector3& rotate) {
-	Matrix4 RotX, RotY, RotZ;
+	Matrix4 RotX, RotY, RotZ, Rot;
+
+	identity_matrix(RotX);
+	identity_matrix(RotY);
+	identity_matrix(RotZ);
+	identity_matrix(Rot);
 
 	rotateX(RotX, rotate.x);
 	rotateY(RotY, rotate.y);
 	rotateZ(RotZ, rotate.z);
 
-	identity_matrix(mat);
+	Rot = RotZ * RotX * RotY;
 
-	mat = RotZ * RotX * RotY;
+	mat = Rot;
 }
 
 void Affine_trans::Affine_Trans(Matrix4& mat, Vector3& scale, Vector3& rotate, Vector3& translation) 

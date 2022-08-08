@@ -18,6 +18,8 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Skydome.h"
+#include "RailCamera.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -98,6 +100,8 @@ class GameScene {
 
 	Skydome* skydome_ = nullptr;
 
+	RailCamera* railcamera_ = nullptr;
+
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 	Vector3 rotate_ = {0, 0, 0};
@@ -113,7 +117,7 @@ class GameScene {
 
 
 	//ワールドトランスフォーム
-	//WorldTransform worldTransform_[100];
+	WorldTransform cameraWorldTransform_;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

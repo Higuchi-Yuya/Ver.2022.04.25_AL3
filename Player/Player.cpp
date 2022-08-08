@@ -1,4 +1,12 @@
 #include "Player.h"
+#include "RailCamera.h"
+
+//RailCamera* railCamera = nullptr;
+
+Player::~Player() 
+{
+	
+}
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	// NULLポインタチェック
@@ -12,7 +20,12 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	debugText_ = DebugText::GetInstance();
 
 	//ワールド変換を初期化
+	worldTransform_.translation_.z = 50.0f;
 	worldTransform_.Initialize();
+	
+
+
+
 	
 }
 
@@ -35,6 +48,8 @@ void Player::Update() {
 		bullet->Update();
 	}
 
+	
+
 	//行列の更新および転送
 	Trans_Update();
 
@@ -56,7 +71,7 @@ void Player::Attack() {
 
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, worldTransform_, velocity);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
@@ -78,16 +93,22 @@ Vector3 Player::GetWorldPosition()
 	// ワールド座標を入れる変数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
-	return worldPos; 
+	return worldPos;
 }
 
 void Player::OnCollision() {}
 
-void Player::Move() {
+void Player::SetWorldTransformParent(WorldTransform *worldtransform) 
+{
+	worldTransform_.parent_ = worldtransform;
+}
+
+void Player::Move() 
+{
 	Vector3 move = {0, 0, 0};
 	constexpr float MoveLimitX = 35;
 	constexpr float MoveLimitY = 19;
@@ -141,11 +162,16 @@ void Player::Trans_Update()
 	
 	//ベクトルの加算
 	trans->identity_matrix(worldTransform_.matWorld_);
+
+	
+
 	trans->Affine_Trans(
 	  worldTransform_.matWorld_, worldTransform_.scale_, worldTransform_.rotation_,
 	  worldTransform_.translation_);
-	
 
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+	//worldTransform_.matWorld_ *= railCamera->GetWorldTransform().matWorld_;
+	//worldTransform_.matWorld_.m[3][2] += 50.0f;
 	//行列の転送
 	worldTransform_.TransferMatrix();
 }

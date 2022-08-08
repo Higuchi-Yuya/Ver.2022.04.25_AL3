@@ -35,5 +35,10 @@ class Affine_trans {
 	void rotateZ(Matrix4& mat, float frequency_z);
 
 	void Inverse(Matrix4& mat);
+
+	// 座標変換（ベクトルと行列の掛け算をする）
+	void Vec3conversion(Vector3& v, const Matrix4& m);
+
+	void Vec3conversion2(Vector3& v, const Matrix4& m);
   private:
 };
