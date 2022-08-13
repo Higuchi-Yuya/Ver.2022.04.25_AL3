@@ -1,7 +1,8 @@
 #include "Enemy.h"
 #include "Player.h"
+#include "GameScene.h"
 
-void Enemy::Initialize(Model* model) {
+void Enemy::Initialize(Model* model ,Vector3& position) {
 
 	// NULLポインタチェック
 	assert(model);
@@ -15,49 +16,48 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.Initialize();
 
 	//初期座標の設定
-	worldTransform_.translation_ = {20, 3, 30};
+	worldTransform_.translation_ = {position.x, position.y, position.z};
 
 }
 
 void Enemy::Update() 
 {
-	//敵移動ベクトル
-	Vector3 move = {0, 0, 0};
+	if (isDead_==false) {
+		//敵移動ベクトル
+		Vector3 move = {0, 0, 0};
 
-	//デスフラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+		//フェーズ処理
+		switch (phase_) {
+		case Phase::Approach:
+		default:
+			Approach_Update();
+			break;
 
-	//フェーズ処理
-	switch (phase_) { 
-	case Phase::Approach:
-	default:
-		Approach_Update();
-		break;
+		case Phase::Laeve:
+			Laeve_Update();
+			break;
+		}
 
-	case Phase::Laeve:
-		Laeve_Update();
-		break;
+		trans->identity_matrix(worldTransform_.matWorld_);
+		trans->Affine_Trans(
+		  worldTransform_.matWorld_, worldTransform_.scale_, worldTransform_.rotation_,
+		  worldTransform_.translation_);
+
+		worldTransform_.TransferMatrix();
 	}
+	
 
-	//弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
 
-	trans->identity_matrix(worldTransform_.matWorld_);
-	trans->Affine_Trans(worldTransform_.matWorld_, worldTransform_.scale_, worldTransform_.rotation_,worldTransform_.translation_);
-
-	worldTransform_.TransferMatrix();
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) 
 {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-
-	//弾描画
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Draw(viewProjection);
+	if(isDead_==false) {
+		model_->Draw(worldTransform_, viewProjection, textureHandle_);
 	}
+	
+
+	
 }
 
 void Enemy::Approach_Initialize() 
@@ -119,10 +119,10 @@ void Enemy::Fire()
 
 	//弾を生成し、初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(model_, worldTransform_, velocity);
 
 	//弾を登録する
-	bullets_.push_back(std::move(newBullet));
+	gameScene_->AddEnemyBullet(newBullet);
 }
 
 Vector3 Enemy::GetWorldPosition() 
@@ -130,14 +130,15 @@ Vector3 Enemy::GetWorldPosition()
 	// ワールド座標を入れる変数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
 
 
 
-void Enemy::OnCollision() {}
+void Enemy::OnCollision() 
+{ isDead_ = true; }
 

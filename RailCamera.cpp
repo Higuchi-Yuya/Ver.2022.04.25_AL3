@@ -24,11 +24,11 @@ void RailCamera::Update() {
 
 	// カメラオブジェの移動処理
 	move = {0.0f, 0.0f, -moveSpeed_.z};
-	worldTransform_.translation_ += move;
+	//worldTransform_.translation_ += move;
 
 	// カメラオブジェの回転処理
 	rotate = {0.0f, +rotateSpeed_.y, 0.0f};
-	worldTransform_.rotation_ += rotate;
+	//worldTransform_.rotation_ += rotate;
 
 	// ワールド行列の再計算
 	trans->identity_matrix(worldTransform_.matWorld_);

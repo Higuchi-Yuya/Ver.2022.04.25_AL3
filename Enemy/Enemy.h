@@ -13,11 +13,13 @@ enum class Phase {
 
 class Player;
 
+class GameScene;
+
 class Enemy
 {
   public:
 	//敵の基本的な関数
-	void Initialize(Model* model);
+	void Initialize(Model* model, Vector3& position);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
@@ -31,6 +33,8 @@ class Enemy
 	// 敵キャラに自キャラのアドレスを渡す
 	void SetPlayer(Player* player) { player_ = player; }
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
 	//弾の発射関数
 	void Fire();
 
@@ -41,7 +45,9 @@ class Enemy
 	void OnCollision();
 
 	// 弾リストを取得
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+	//const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+
+	bool IsDead() const { return isDead_; }
 
   public:
 	//発射間隔
@@ -63,7 +69,8 @@ class Enemy
 	//アフィン用
 	Affine_trans* trans = nullptr;
 
-	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+	//デスフラグ
+	bool isDead_ = false;
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
@@ -73,4 +80,7 @@ class Enemy
 
 	// 自キャラ
 	Player* player_ = nullptr;
+
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
 };

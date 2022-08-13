@@ -14,6 +14,7 @@
 #include "AxisIndicator.h"
 #include <math.h>
 #include <random>
+#include <sstream>
 
 #include "Enemy.h"
 #include "Player.h"
@@ -62,6 +63,21 @@ class GameScene {
 	void rotate(Vector3& vertex, Vector3& reference_point, float frequency_x, float frequency_y, float frequency_z);
 
 	void CheckAllCollisions();
+
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet> &enemyBullet);
+
+	void EnemyBulletFlagDead();
+
+	void EnemyBulletUpdate();
+
+	void EnemyBulletDraw();
+
+	void EnemySpawn(Vector3& position);
+
+	void LoadEnemyPopData();
+
+	void UpdateEnemyPopCommands();
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -96,7 +112,7 @@ class GameScene {
 	// 呼び出し宣言
 	Player* player_ = nullptr;
 
-	Enemy* enemy_;
+	std::list<std::unique_ptr<Enemy>> enemys_;
 
 	Skydome* skydome_ = nullptr;
 
@@ -115,6 +131,11 @@ class GameScene {
 	Vector4 grit_color_x = {0, 0, 1, 1};
 	Vector4 grit_color_z = {1, 0, 0, 1};
 
+	// 敵の位置リスト
+	Vector3 enemypos[2] = {
+	  {20,  3, 10},
+      {-20, 3, 10}
+    };
 
 	//ワールドトランスフォーム
 	WorldTransform cameraWorldTransform_;
@@ -125,6 +146,15 @@ class GameScene {
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
 
+	// 敵の弾リスト
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+
+	// 敵発生待機用変数
+	bool waitFlag = false;
+	int waitTimer = 0;
 
 	/// <summary>
 	/// ゲームシーン用
