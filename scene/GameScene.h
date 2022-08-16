@@ -153,8 +153,8 @@ class GameScene {
 	std::stringstream enemyPopCommands;
 
 	// 敵発生待機用変数
-	bool waitFlag = false;
-	int waitTimer = 0;
+	bool waitFlag = true;
+	int waitTimer = 120;
 
 	/// <summary>
 	/// ゲームシーン用

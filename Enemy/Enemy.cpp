@@ -109,12 +109,13 @@ void Enemy::Fire()
 	const float kBulletSpeed = 0.1f;
 	
 	Vector3 enemy_pos = GetWorldPosition();
+	//Vector3 enemy_pos = worldTransform_.translation_;
 	Vector3 player_pos = player_->GetWorldPosition();
 	Vector3 velocity = player_pos - enemy_pos;
 	velocity.normalize();
 	velocity *= kBulletSpeed;
 
-	////速度ベクトルを自機の向きに合わせて回転させる
+	//速度ベクトルを自機の向きに合わせて回転させる
 	//velocity = velocity * worldTransform_.matWorld_;
 
 	//弾を生成し、初期化

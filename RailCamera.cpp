@@ -46,7 +46,7 @@ void RailCamera::Update() {
 	Vector3 forward(0, 0, 1);
 
 	// レールカメラの回転を反映
-	trans->Vec3conversion2(forward, worldTransform_.matWorld_);
+	trans->Vec3conversion_W_Notincluded(forward, worldTransform_.matWorld_);
 	
 	// 視点から前方に適当な距離進んだ位置が注視点
 	viewProjection_.target = viewProjection_.eye + forward;
@@ -55,7 +55,7 @@ void RailCamera::Update() {
 	Vector3 up(0, 1, 0);
 
 	// レールカメラの回転を反映（レールカメラの上方ベクトル）
-	trans->Vec3conversion2(up,worldTransform_.matWorld_);
+	trans->Vec3conversion_W_Notincluded(up,worldTransform_.matWorld_);
 	viewProjection_.up = up;
 
 	// ビュープロジェクションを更新

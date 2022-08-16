@@ -2,6 +2,8 @@
 #include "RailCamera.h"
 
 //RailCamera* railCamera = nullptr;
+float VpWidth = 1280;
+float VpHeight = 720;
 
 Player::~Player() 
 {
@@ -15,6 +17,16 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	model_ = model;
 	textureHandle_ = textureHandle;
 
+	// レティクル用テクスチャ取得
+	uint32_t textureReticle_ = TextureManager::Load("2DReticle_220.png");
+
+	// スプライト生成
+	Vector2 pos = {10, 0};
+	Vector4 color = {1, 1, 1, 1};
+	Vector2 anker = {0.5f, 0.5f};
+	sprite2DReticle_.reset(Sprite::Create(textureReticle_, pos, color, anker));
+
+
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
@@ -23,7 +35,8 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.translation_.z = 50.0f;
 	worldTransform_.Initialize();
 	
-
+	// 3Dレティクルのワールドトランスフォーム初期化
+	worldTransform3DReticle_.Initialize();
 
 
 	
@@ -48,10 +61,11 @@ void Player::Update() {
 		bullet->Update();
 	}
 
-	
 
 	//行列の更新および転送
 	Trans_Update();
+
+
 
 	//デバッグテキスト
 	Debug_Text();
@@ -59,15 +73,27 @@ void Player::Update() {
 
 void Player::Attack() {
 
-	if (input_->TriggerKey(DIK_Y)) {
+	if (input_->PushKey(DIK_Y)) {
 
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
+		Vector3 velocity;
 		Affine_trans trans;
 
+		Vector3 player_pos = GetWorldPosition();
+		Vector3 reticle_pos = {
+		  worldTransform3DReticle_.matWorld_.m[3][0], worldTransform3DReticle_.matWorld_.m[3][1],
+		  worldTransform3DReticle_.matWorld_.m[3][2]};
+
+		// 自機から照準オブジェクトへのベクトル
+		velocity = reticle_pos - player_pos;
+		velocity.normalize();
+		velocity *= kBulletSpeed;
+
 		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = velocity * worldTransform_.matWorld_;
+		//velocity = velocity * worldTransform_.matWorld_;
+
+		
 
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
@@ -81,6 +107,9 @@ void Player::Attack() {
 void Player::Draw(ViewProjection viewProjection) {
 
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	// 3Dレティクルを描画
+	ReticleDraw(viewProjection);
 
 	//弾描画
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -183,4 +212,73 @@ void Player::Debug_Text()
 	debugText_->Printf(
 	  "Pos:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y,
 	  worldTransform_.translation_.z);
+}
+
+void Player::ReticleUpdate(ViewProjection viewProjection) 
+{
+	Affine_trans trans;
+	// 自機のワールド座標から3Dレティクルのワールド座標を計算
+	{
+		// 自機から3Dレティクルへの距離
+		const float kDistancePlayerTo3DReticle = 40.0f;
+
+		// 自機から3Dレティクルへのオフセット(Z+向き)
+		Vector3 offset = {0, 0, 1.0f};
+
+		// 自機のワールド行列の回転を反映
+		trans.Vec3conversion_W_Notincluded(offset, worldTransform_.matWorld_);
+
+		// ベクトルの長さを整える
+		offset.normalize() *= kDistancePlayerTo3DReticle;
+
+		// 3Dレティクルの座標を設定
+		Vector3 player_pos = GetWorldPosition();
+
+		worldTransform3DReticle_.translation_ = offset + player_pos;
+
+		// ワールド行列の更新と転送
+		trans.Affine_Trans(
+		  worldTransform3DReticle_.matWorld_, 
+		  worldTransform3DReticle_.scale_,
+		  worldTransform3DReticle_.rotation_, 
+		  worldTransform3DReticle_.translation_);
+
+		worldTransform3DReticle_.TransferMatrix();
+	}
+
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		Vector3 positionReticle = {
+		  worldTransform3DReticle_.matWorld_.m[3][0], worldTransform3DReticle_.matWorld_.m[3][1],
+		  worldTransform3DReticle_.matWorld_.m[3][2]};
+
+		// ビューポート行列
+		Matrix4 matViewport =
+		{
+		 VpWidth/2, 0.0f       , 0.0f, 0.0f,
+		 0.0f     , -VpHeight/2, 0.0f, 0.0f,
+		 0.0f     , 0.0f       , 1.0f, 0.0f,
+		 VpWidth/2, VpHeight/2 , 0.0f, 1.0f
+		};
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4 matViewProjectionViewport =
+		  viewProjection.matView * viewProjection.matProjection * matViewport;
+
+		// ワールド→スクリーン座標変換（ここで3Dから2Dになる）
+		trans.Vec3conversion_W_Included(positionReticle, matViewProjectionViewport);
+
+		// スプライトのレティクルに座標設定
+		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+	}
+}
+
+void Player::ReticleDraw(ViewProjection viewProjection) 
+{
+	//model_->Draw(worldTransform3DReticle_, viewProjection);
+}
+
+void Player::DrawUI() 
+{ 
+	sprite2DReticle_.get()->Draw(); 
 }

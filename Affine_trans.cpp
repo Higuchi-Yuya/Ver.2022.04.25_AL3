@@ -97,7 +97,7 @@ void Affine_trans::Inverse(Matrix4& mat) {
 	//çsóÒÇë„ì¸
 }
 
-void Affine_trans::Vec3conversion(Vector3& v, const Matrix4& m) {
+void Affine_trans::Vec3conversion_W_Included(Vector3& v, const Matrix4& m) {
 	float W = v.x * m.m[0][3] + v.y * m.m[1][3] + v.z * m.m[2][3] + m.m[3][3];
 	Vector3 result
 	{
@@ -109,8 +109,7 @@ void Affine_trans::Vec3conversion(Vector3& v, const Matrix4& m) {
 	v = result;
 }
 
-void Affine_trans::Vec3conversion2(Vector3& v, const Matrix4& m) 
-{
+void Affine_trans::Vec3conversion_W_Notincluded(Vector3& v, const Matrix4& m) {
 	Vector3 result
 	{
 	  (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0]),

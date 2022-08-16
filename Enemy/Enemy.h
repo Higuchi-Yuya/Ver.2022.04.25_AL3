@@ -64,7 +64,7 @@ class Enemy
 	float enemy_speed_z = 0.05f;
 	
 	//発射タイマー
-	int32_t fireTimer_ = 0;
+	int32_t fireTimer_ = 60;
 
 	//アフィン用
 	Affine_trans* trans = nullptr;

@@ -297,6 +297,9 @@ void GameScene::UpdateEnemyPopCommands()
 void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
+	
+	// レティクルのテクスチャ
+	TextureManager::Load("2DReticle_500.png");
 
 	debugCamera_ = new DebugCamera(1200, 720);
 
@@ -421,6 +424,9 @@ void GameScene::Update() {
 
 #pragma region キャラクター移動処理
 	player_->Update();
+
+	player_->ReticleUpdate(railcamera_->GetViewProjection());
+
 	UpdateEnemyPopCommands();
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Update();
@@ -519,6 +525,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	player_->DrawUI();
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

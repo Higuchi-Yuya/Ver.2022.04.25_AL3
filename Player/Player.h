@@ -37,6 +37,15 @@ class Player {
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 	void SetWorldTransformParent(WorldTransform *worldtransform);
+
+	// 3Dレティクルの更新処理
+	void ReticleUpdate(ViewProjection viewProjection);
+
+	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
   private:
 	//移動処理
 	void Move();
@@ -49,6 +58,13 @@ class Player {
 	//デバッグテキスト
 	void Debug_Text();
 
+
+
+	// 3Dレティクルの描画処理
+	void ReticleDraw(ViewProjection viewProjection);
+
+	
+
 //メンバ変数
   private:
 	Input* input_ = nullptr;
@@ -57,6 +73,10 @@ class Player {
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	WorldTransform cameraworld_;
+
+	// 3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
+
 	//モデル
 	Model* model_ = nullptr;
 
@@ -72,4 +92,7 @@ class Player {
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
+	// 2Dレティクル用スプライト
+	std::unique_ptr<Sprite> sprite2DReticle_;
+	
 };
